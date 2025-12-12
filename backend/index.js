@@ -1,67 +1,64 @@
 import express from "express";
-import {createTodo,updateTodo} from "./types.js";
-import {todo} from "./db.js";
+import { createTodo, updateTodo } from "./types.js";
+import { Todo } from "./db.js"; // <-- Correct model import
 import dotenv from "dotenv";
+
 dotenv.config();
-
-
 
 const app = express();
 app.use(express.json());
 
-app.post("/todo",async(req,res)=>{
+// CREATE TODO
+app.post("/todo", async (req, res) => {
+  const createTodobody = req.body;
+  const result = createTodo.safeParse(createTodobody);
 
-    const createTodobody = req.body;
-    const result = createTodo.safeParse(createTodobody);
-    if(!result.success){
-        res.status(401).json({
-            message: "You sent invalid data",
-        })
-        return;
-        
-    }
-    await todo.create ({
-            title: createTodobody.title,
-            description: createTodobody.description,
-            completed: false,
-        })
-        res.json({
-            message: "Todo created successfully", 
-        })
+  if (!result.success) {
+    return res.status(401).json({
+      message: "You sent invalid data",
+    });
+  }
 
+  await Todo.create({
+    title: createTodobody.title,
+    description: createTodobody.description,
+    completed: false,
+  });
 
-})
-app.get("/todo",async(req,res)=>{
-    const todos = await todo.find({
+  res.json({
+    message: "Todo created successfully",
+  });
+});
 
-    })
-    res.json({
-        message: "Todo fetched successfully",
-        data: todos,
-    })
-     
+// GET TODOS
+app.get("/todo", async (req, res) => {
+  const todos = await Todo.find({});
+  res.json({
+    message: "Todo fetched successfully",
+    data: todos,
+  });
+});
 
-})
-app.put("/completed-todo",async(res,req)=>{
+// UPDATE TODO
+app.put("/completed-todo", async (req, res) => {
+  const updateTodobody = req.body;
+  const result = updateTodo.safeParse(updateTodobody);
 
-    const upadateTodobody = req.body;
-    const result = updateTodo.safeParse(updateTodobody);
-    if(!result.success){
-        res.status(401).json({
-            message: "You sent invalid data",
-        })
-        return; 
-    }
-    await todo.updateOne({
-        _id: req.body.id
-    },{
-        completed:true
-    })
-    res.json({
-        message:"Todo updated successfully",
-    })
+  if (!result.success) {
+    return res.status(401).json({
+      message: "You sent invalid data",
+    });
+  }
 
-     
-})
+  await Todo.updateOne(
+    // here you have to give you updated "id": "FAHFIGH32YR8Y249Y39Y9",optional "completed": true
+    { _id: req.body.id },
+    { completed: true }
+  );
 
-app.listen(3000);
+  res.json({
+    message: "Todo updated successfully",
+  });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
