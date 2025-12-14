@@ -7,13 +7,13 @@ function App() {
 
   fetch('http://localhost:3000/todo')
     .then(async function (res){
-      const json= await res.json();
-      setTodos(json.todos);
+      const json = await res.json();
+      setTodos(json.data);
     })
   return (
     <div>
-      <CreateTodo />
-      <Todos todo={todos} />
+      <CreateTodo></CreateTodo>
+      <Todos todos={todos}></Todos>
     </div>
   );
 }
