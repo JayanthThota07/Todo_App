@@ -5,11 +5,17 @@ import { Todos } from './components/Todos'
 function App() {
   const [todos, setTodos] = React.useState([]);
 
-  fetch('http://localhost:3000/todo')
-    .then(async function (res){
-      const json = await res.json();
-      setTodos(json.data);
-    })
+  React.useEffect(()=>{
+    async function fecthData(){
+   const res = await fetch('http://localhost:3000/todo')
+   const json = await res.json();
+   setTodos(json.data);
+   }
+    fecthData();
+
+  },[])
+   
+    
   return (
     <div>
       <CreateTodo></CreateTodo>
